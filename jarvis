@@ -1,0 +1,286 @@
+import datetime
+import json
+import os
+import random
+import webbrowser as wb
+from urllib.request import urlopen
+import psutil
+import pyautogui
+import pyjokes
+import pyttsx3
+import speech_recognition as sr
+import wikipedia as wiki
+import wolframalpha
+import requests
+from time import sleep
+
+
+engine = pyttsx3.init()
+wolframalpha_app_id = 'WAWG7A-AK7PX45UJR'
+
+
+def speak(pesu):
+    engine.say(pesu)
+    engine.runAndWait()
+
+
+def time():
+    Time = datetime.datetime.now().strftime("%I:%M:%S")  # creating variable to store time %H for 24 hrs %I 12 hrs
+    speak("Now the time is ")
+    speak(Time)
+
+
+def Date():
+    date = datetime.datetime.now().day
+    month = datetime.datetime.now().month
+    year = datetime.datetime.now().year
+    speak("The date is")
+    speak(date)
+    speak(month)
+    speak(year)
+
+
+def wishme():
+    speak('hello anand spidy')
+    hour = datetime.datetime.now().hour
+
+    if 6 <= hour < 12:
+        speak("Good morning ")
+    elif 12 <= hour < 18:
+        speak("Good afternoon ")
+    elif 18 <= hour < 20:
+        speak("Good evening ")
+    elif 20 <= hour < 24:
+        speak("Good night ")
+    else:
+        speak("this is mid night.... sleep")
+    Date()
+    time()
+    speak("spyday at your service, what can I help you today")
+
+
+def recognition():
+    r = sr.Recognizer()
+    with sr.Microphone() as source:
+        print("Listening......")
+        r.pause_threshold = 1
+        audio = r.listen(source)
+
+    try:
+        print("Recognizing.....")
+        query = r.recognize_google(audio, language='en-IN')
+        print(query)
+    except Exception as e:
+        print(e)
+        speak('Can you say that again please')
+        return "None"
+    return query
+
+
+def CPU():
+    usage = str(psutil.cpu_percent())
+    speak('Your cpu usage is in' + usage + 'percentage')
+    battery = psutil.sensors_battery()
+    speak('your battery is in')
+    speak(battery.percent)
+    speak('percentage')
+
+
+def jokes():
+    speak(pyjokes.get_joke())
+
+
+def search():
+    speak("what can I search for you")
+    G_search = recognition().lower()
+    speak("I am searching")
+    wb.open('https://www.google.com/search?client=firefox-b-d&q=' + G_search)
+
+
+def screenshot():
+    img = pyautogui.screenshot()
+    img.save('E:/Jarvis/screenshot by spyday/screenshot.jpg')
+
+
+if __name__ == '__main__':
+
+    wishme()  # Every time I run this code it will greet me
+
+    while True:  # if it wished me goes to this cmd
+        query = recognition().lower()  # creating infinite loop
+
+        # All commands will be stored in lowe case in query
+
+        if 'time' in query:
+            time()
+
+        elif 'date' in query:
+            Date()
+
+        elif 'wikipedia' in query:
+            speak("what do you want to search in wikipedia")
+            search = recognition()
+            query = query.replace(search, '')
+            result = wiki.summary(search, sentences=3)
+            speak('According to wikipedia')
+            print(result)
+            speak(result)
+
+        elif 'website' in query:
+            speak('what should I search')
+            firefoxpath = 'C:/Program Files/Mozilla Firefox/firefox.exe %s'
+            search = recognition().lower()
+            wb.get(firefoxpath).open_new_tab(search + '.com')
+
+        elif 'youtube' in query:
+            speak('What do you want to search in youtube')
+            tube_search = recognition().lower()
+            speak("Here you go YOUTUBE!")
+            wb.open('https://www.youtube.com/results?search_query=' + tube_search)
+
+        elif 'search' in query:
+            search()
+
+        elif 'cpu' in query:
+            CPU()
+
+        elif 'joke' in query:
+            jokes()
+            print(jokes())
+
+        elif 'offline' in query or 'bye' in query:
+            speak("Yes sir, call me anytime")
+            quit()
+
+        elif 'python editor' in query:
+            speak('opening pycharm sir....')
+            pycharm = r'C:/Program Files/JetBrains/PyCharm Community Edition 2020.2.4/bin/pycharm64.exe'
+            os.startfile(pycharm)
+
+        elif 'browse' in query:
+            speak('opening browser sir')
+            brow = r'C:/Program Files/Mozilla Firefox/firefox.exe'
+            os.startfile(brow)
+        elif 'chrome' in query:
+            speak('opening chrome')
+            chr = r"C:\Program Files\Google\Chrome\Application\chrome.exe"
+            os.startfile(chr)
+
+        elif 'make notes' in query:
+            speak('what can I note for you')
+            note = recognition()
+            file = open('notes.txt', 'w')
+            speak('you want to include date and time')
+            ans = recognition()
+            if 'yes' in ans or 'sure' in ans:
+                datime = datetime.datetime.now().strftime('%I:%M:%S')
+                file.write(datime)
+                file.write(':-')
+                file.write(note)
+                speak('I took the notes ')
+            else:
+                file.write(note)
+
+        elif 'show notes' in query:
+            speak("showing notes")
+            file = open('notes.txt', 'r')
+            print(file.read())
+            speak(file.read())
+
+        elif 'screenshot' in query:
+            screenshot()
+            speak("screenshot taken")
+
+        elif 'play movies' in query:
+            mov_dir = 'E:/Videos/Movies'
+            mov = os.listdir(mov_dir)
+            print(mov)
+            speak('select the number')
+            speak('which movie you want to play')
+            play = recognition().lower()
+            while play != 'number' and play != 'random' and play != 'your choice' and play != 'anyone':
+                speak("please can you say that again")
+                play = recognition().lower()
+            if 'number' in play:
+                no = int(play.replace('number', ''))
+                speak('playing video')
+            elif 'random' or 'your choice' or 'anyone' in play:
+                no = random.randint(0, 10)
+                speak('playing video')
+
+            os.startfile(os.path.join(mov_dir, mov[no]))
+
+        elif 'remember me' in query:
+            speak('what you want to remember you')
+            memory = recognition()
+            speak("you said to remember that" + memory)
+            file = open('memory.txt', 'w')
+            file.write(memory)
+            file.close()
+
+        elif 'remember anything' in query:
+            file = open('memory.txt', 'r')
+            speak('you said to remember me that' + file.read())
+
+        elif 'news' in query:
+            try:
+                news = urlopen(
+                    'http://newsapi.org/v2/top-headlines?sources=techcrunch&apiKey=b3b189e230a34e968bacaf12096d70e4')
+                data = json.load(news)
+                i = 1
+
+                speak('here are the latest tech news')
+                print('==============TOP HEADLINES==============' + '\n')
+                for item in data['articles']:
+                    print(str(i) + '. ' + item['title'] + '\n')
+                    print(item['description'] + '\n')
+                    speak(item['title'])
+                    i = i + 1
+
+            except Exception as e:
+                print(str(e))
+
+        elif 'where is' in query:
+            query = query.replace('where is', '')
+            loc = query
+            speak("Here is you asked place")
+            wb.open_new_tab("https://www.google.com/maps/place/" + loc)
+
+        elif 'calculate' in query:
+            client = wolframalpha.Client(wolframalpha_app_id)
+            indx = query.lower().split().index('calculate')
+            query = query.split()[indx + 1:]
+            res = client.query(''.join(query))
+            answer = next(res.results).text
+            try:
+                print('The Answer is : ' + answer)
+                speak('The answer is : ' + answer)
+            except Exception as e:
+                print(e)
+
+        elif 'what is' in query:
+            client = wolframalpha.Client(wolframalpha_app_id)
+            res = client.query(query)
+
+            try:
+                print(next(res.results).text)
+                speak(next(res.results).text)
+
+            except StopIteration:
+                print('No results')
+                speak('No result')
+
+        elif 'stop listening' in query:
+            speak("How many seconds you want me to stop listening")
+            lis = int(recognition())
+            print(lis)
+            sleep(lis)
+
+        elif 'log out' in query:
+            os.system('shutdown -l')
+
+        elif 'restart' in query:
+            os.system('shutdown /r /t 1')
+
+        elif 'shutdown' in query:
+            os.system('shutdown /s /t 1')
