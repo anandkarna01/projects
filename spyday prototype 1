@@ -1,0 +1,396 @@
+import datetime
+import json
+import os
+import random
+import webbrowser as wb
+from time import sleep
+from urllib.request import urlopen
+import psutil
+import pyautogui
+import pyjokes
+import pyttsx3
+import speech_recognition as sr
+import wikipedia as wiki
+import wolframalpha
+import requests
+import pywhatkit
+
+engine = pyttsx3.init()
+wolframalpha_app_id = 'WAWG7A-AK7PX45UJR'
+
+
+def speak(pesu):
+    engine.say(pesu)
+    engine.runAndWait()
+
+
+def time():
+    Time = datetime.datetime.now().strftime("%I:%M:%S")  # creating variable to store time %H for 24 hrs %I 12 hrs
+    speak("Now the time is ")
+    speak(Time)
+
+
+def Date():
+    date = datetime.datetime.now().day
+    month = datetime.datetime.now().month
+    year = datetime.datetime.now().year
+    speak("The date is")
+    speak(date)
+    speak(month)
+    speak(year)
+
+
+def wishme():
+    speak('Welcome Back anand spidy....')
+    hour = datetime.datetime.now().hour
+
+    if 6 <= hour < 12:
+        speak("Good morning ")
+    elif 12 <= hour < 18:
+        speak("Good afternoon ")
+    elif 18 <= hour < 20:
+        speak("Good evening ")
+    elif 20 <= hour < 24:
+        speak("Good night ")
+    else:
+        speak("this is mid night.... sleep")
+    Date()
+    time()
+    speak("spyday at your service, what can I help you today")
+
+
+def recognition():
+    r = sr.Recognizer()
+    with sr.Microphone() as source:
+        print("Listening......")
+        r.pause_threshold = 1
+        audio = r.listen(source)
+
+    try:
+        print("Recognizing.....")
+        query = r.recognize_google(audio, language='en-in')
+        print(query)
+    except Exception as e:
+        print(e)
+        speak('Can you say that again please')
+        return "None"
+    return query
+
+
+def CPU():
+    usage = str(psutil.cpu_percent())
+    speak('Your cpu usage is in' + usage + 'percentage')
+    battery = psutil.sensors_battery()
+    speak('your battery is in')
+    speak(battery.percent)
+    speak('percentage')
+
+
+def jokes():
+    speak(pyjokes.get_joke())
+
+
+def screenshot():
+    img = pyautogui.screenshot()
+    img.save('E:/Jarvis/screenshot by spyday/screenshot.jpg')
+
+
+def screenprint():
+    wel = ("Welcome Back A_N_A_N_D_S_P_I_D_Y......SPYDAY in your service ")
+    for i in wel:
+        print(i, end="", )
+        sleep(0.1)
+
+
+if __name__ == '__main__':
+
+    screenprint()
+
+    wishme()  # Every time I run this code it will greet me
+
+    while True:  # if it wished me goes to this cmd
+        query = recognition().lower()  # creating infinite loop
+
+        # All commands will be stored in lowe case in query
+
+        if 'time' in query:
+            time()
+
+        elif 'date' in query:
+            Date()
+
+        elif 'wikipedia' in query:
+
+            try:
+                speak("what do you want to search in wikipedia")
+                search = recognition()
+                query = query.replace(search, '')
+                result = wiki.summary(search, sentences=3)
+                speak('According to wikipedia')
+                print(result)
+                speak(result)
+
+            except Exception as e:
+                print(e)
+                speak("sorry....no results")
+
+        elif 'website' in query:
+            speak('what should I search')
+            firefoxpath = 'C:/Program Files/Mozilla Firefox/firefox.exe %s'
+            search = recognition().lower()
+            wb.get(firefoxpath).open_new_tab(search + '.com')
+
+        elif 'youtube' in query:
+            speak('What do you want to search in youtube')
+            tube_search = recognition().lower()
+            speak("Here you go YOUTUBE!")
+            wb.open('https://www.youtube.com/results?search_query=' + tube_search)
+
+        elif 'search' in query:
+            speak("what can I search for you")
+            G_search = recognition().lower()
+            speak("I am searching")
+            wb.open('https://www.google.com/search?client=firefox-b-d&q=' + G_search)
+
+        elif 'cpu' in query:
+            CPU()
+
+        elif 'joke' in query:
+            jokes()
+            print(jokes())
+
+        elif 'offline' in query or 'goodbye' in query:
+            speak("Yes sir, call me anytime")
+            quit()
+
+        elif 'python editor' in query:
+            speak('opening pycharm sir....')
+            pycharm = r'C:/Program Files/JetBrains/PyCharm Community Edition 2020.2.4/bin/pycharm64.exe'
+            os.startfile(pycharm)
+
+        elif 'browser' in query:
+            speak('opening browser sir')
+            brow = r'C:/Program Files/Mozilla Firefox/firefox.exe'
+            os.startfile(brow)
+
+        elif 'chrome' in query:
+            speak('opening chrome')
+            chr = r"C:\Program Files\Google\Chrome\Application\chrome.exe"
+            os.startfile(chr)
+
+        elif 'folder' in query:
+            speak("Opening anandspidy folder")
+            fol = r"E:/"
+            os.startfile(fol)
+
+        elif 'what is the weather today' in query:
+            api_id = '5492d8eb146a88e664b1559ba70193b7'
+            url = "http://api.openweathermap.org/data/2.5/weather?q="
+            complete_url = url + 'chennai&appid='+api_id
+            response = requests.get(complete_url)
+            x = response.json()
+            speak("the details about the weather in here is")
+
+            try:
+                y = x["main"]
+                current_temperature = y["temp"]
+                current_pressure = y["pressure"]
+                current_humidiy = y["humidity"]
+                z = x["weather"]
+                weather_description = z[0]["description"]
+                speak(" Temperature (in kelvin unit) = " + str(
+                    current_temperature) + "\n atmospheric pressure (in hPa unit) =" + str(
+                    current_pressure) + "\n humidity (in percentage) = " + str(
+                    current_humidiy) + "\n description = " + str(weather_description))
+                print(" Temperature (in kelvin unit) = " + str(
+                    current_temperature) + "\n atmospheric pressure (in hPa unit) =" + str(
+                    current_pressure) + "\n humidity (in percentage) = " + str(
+                    current_humidiy) + "\n description = " + str(weather_description))
+
+            except Exception as e:
+                print(e)
+                speak(" Sorry sir....there in one problem to find the weather ")
+
+        elif 'weather' in query:
+            api_id = '5492d8eb146a88e664b1559ba70193b7'
+            url = "https://api.openweathermap.org/data/2.5/weather?q="
+            speak(" City name ")
+            print("City name : ")
+            city_name = recognition()
+            complete_url = url+city_name+'&appid='+'5492d8eb146a88e664b1559ba70193b7'
+            response = requests.get(complete_url)
+            x = response.json()
+
+            try:
+                y = x["main"]
+                current_temperature = y["temp"]
+                current_pressure = y["pressure"]
+                current_humidiy = y["humidity"]
+                z = x["weather"]
+                weather_description = z[0]["description"]
+                speak(" Temperature (in kelvin unit) = " + str(
+                    current_temperature) + "\n atmospheric pressure (in hPa unit) =" + str(
+                    current_pressure) + "\n humidity (in percentage) = " + str(
+                    current_humidiy) + "\n description = " + str(weather_description))
+                print(" Temperature (in kelvin unit) = " + str(
+                    current_temperature) + "\n atmospheric pressure (in hPa unit) =" + str(
+                    current_pressure) + "\n humidity (in percentage) = " + str(
+                    current_humidiy) + "\n description = " + str(weather_description))
+
+            except Exception as e:
+                print(e)
+                speak(" City Not Found ")
+
+        elif 'make note' in query:
+            speak('what can I note for you')
+            note = recognition()
+            file = open('notes.txt', 'w')
+            speak('you want to include date and time')
+            ans = recognition()
+            if 'yes' in ans or 'sure' in ans:
+                datime = datetime.datetime.now().strftime('%I:%M:%S')
+                file.write(datime)
+                file.write(':-')
+                file.write(note)
+                speak('I took the notes ')
+            else:
+                file.write(note)
+
+        elif 'show note' in query:
+            speak("showing notes")
+            file = open('notes.txt', 'r')
+            print(file.read())
+            speak(file.read())
+
+        elif 'screenshot' in query:
+            screenshot()
+            speak("screenshot taken")
+
+        elif 'gmail' in query:
+            speak("opening your Gmail sir")
+            wb.open_new_tab("https://mail.google.com/mail/u/2/#inbox")
+
+        elif 'play movie' in query:
+            mov_dir = 'E:/Videos/Movies'
+            mov = os.listdir(mov_dir)
+            print(mov)
+            speak('select the number')
+            speak('which movie you want to play')
+            play = recognition().lower()
+            while play != 'number' and play != 'random' and play != 'your choice' and play != 'anyone':
+                speak("please can you say that again")
+                play = recognition().lower()
+            if 'number' in play:
+                no = int(play.replace('number', ''))
+                speak('playing video')
+                continue
+
+            elif 'random' or 'your choice' or 'anyone' in play:
+                no = random.randint(0, 10)
+                speak('playing video')
+                continue
+
+            os.startfile(os.path.join(mov_dir, mov[no]))
+
+        elif 'play' in query:
+            you = query.replace('play', '')
+            speak('playing'+you)
+            pywhatkit.playonyt(you)
+
+        elif 'remember me' in query:
+            speak('what you want to remember you')
+            memory = recognition()
+            speak("you said to remember that" + memory)
+            file = open('memory.txt', 'w')
+            file.write(memory)
+            file.close()
+
+        elif 'remember anything' in query:
+            file = open('memory.txt', 'r')
+            speak('you said to remember me that' + file.read())
+
+        elif 'news' in query:
+            try:
+                news = urlopen(
+                    'http://newsapi.org/v2/top-headlines?sources=techcrunch&apiKey=b3b189e230a34e968bacaf12096d70e4')
+                data = json.load(news)
+                i = 1
+
+                speak('here are the latest tech news')
+                print('==============TOP HEADLINES==============' + '\n')
+                for item in data['articles']:
+                    print(str(i) + '. ' + item['title'] + '\n')
+                    print(item['description'] + '\n')
+                    speak(item['title'])
+                    i = i + 1
+
+            except Exception as e:
+                print(str(e))
+
+        elif 'where is' in query:
+            query = query.replace('where is', '')
+            loc = query
+            speak("Here is you asked place")
+            wb.open_new_tab("https://www.google.com/maps/place/" + loc)
+
+        elif 'calculate' in query:
+            client = wolframalpha.Client(wolframalpha_app_id)
+            indx = query.lower().split().index('calculate')
+            query = query.split()[indx + 1:]
+            res = client.query(''.join(query))
+            answer = next(res.results).text
+            try:
+                print('The Answer is : ' + answer)
+                speak('The answer is : ' + answer)
+            except Exception as e:
+                print(e)
+
+        elif 'what is' in query or 'who is' in query:
+            client = wolframalpha.Client(wolframalpha_app_id)
+            res = client.query(query)
+
+            try:
+                print(next(res.results).text)
+                speak(next(res.results).text)
+
+            except Exception as e:
+                print(e)
+                speak('No results')
+
+        elif 'stop listening' in query or 'sleep' in query:
+
+            try:
+                speak("How many seconds you want me to stop listening")
+                lis = int(recognition())
+                print(lis)
+                sleep(lis)
+            except ValueError:
+                print(ValueError)
+
+        elif 'how are you' in query:
+            speak("I am very good spidy......Thank you for asking")
+            speak("How are you spidy...I wish to be you fine")
+
+        elif 'thanks' in query or 'thank you' in query:
+            speak('welcome')
+            speak("It is my pleasure to help you")
+
+        elif 'whatsapp' in query:
+            speak("Opening Whatsapp")
+            wb.open_new_tab("https://web.whatsapp.com/")
+
+        elif "google meet" in query:
+            speak("opening google meet")
+            wb.open_new_tab("https://meet.google.com/kqt-afhf-ggt")
+
+        elif 'create' in query:
+            speak("I am created by the legend anandspidy")
+
+        elif 'log out' in query:
+            os.system('shutdown -l')
+
+        elif 'restart' in query:
+            os.system('shutdown /r /t 1')
+
+        elif 'shutdown' in query:
+            os.system('shutdown /s /t 1')
