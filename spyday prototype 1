@@ -5,17 +5,19 @@ import random
 import webbrowser as wb
 from time import sleep
 from urllib.request import urlopen
-import psutil
-import pyautogui
-import pyjokes
-import pyttsx3
-import speech_recognition as sr
-import wikipedia as wiki
-import wolframalpha
-import requests
-import pywhatkit
+import psutil  # pip install psutil - use this command in terminal to import psutil
+import pyautogui  # pip install pyautogui
+import pyjokes  #pip install pyjokes
+import pyttsx3  # pip install pyttsx3
+import speech_recognition as sr  # pip install SpeechRecognition
+import wikipedia as wiki  # pip install wikipedia
+import wolframalpha  # pip install wolframalpha
+import requests  # pip install requests
+import pywhatkit  # pip install pywhatkit
 
 engine = pyttsx3.init()
+voices = engine.getProperty('voices')
+engine.setProperty('voice', voices[0].id)  # 0 for male voice and 1 for female voice
 wolframalpha_app_id = 'WAWG7A-AK7PX45UJR'
 
 
@@ -136,7 +138,7 @@ if __name__ == '__main__':
 
         elif 'website' in query:
             speak('what should I search')
-            firefoxpath = 'C:/Program Files/Mozilla Firefox/firefox.exe %s'
+            firefoxpath = 'C:/Program Files/Mozilla Firefox/firefox.exe %s' # put your location of your browser
             search = recognition().lower()
             wb.get(firefoxpath).open_new_tab(search + '.com')
 
@@ -165,22 +167,22 @@ if __name__ == '__main__':
 
         elif 'python editor' in query:
             speak('opening pycharm sir....')
-            pycharm = r'C:/Program Files/JetBrains/PyCharm Community Edition 2020.2.4/bin/pycharm64.exe'
+            pycharm = r'C:/Program Files/JetBrains/PyCharm Community Edition 2020.2.4/bin/pycharm64.exe'  # put your path
             os.startfile(pycharm)
 
         elif 'browser' in query:
             speak('opening browser sir')
-            brow = r'C:/Program Files/Mozilla Firefox/firefox.exe'
+            brow = r'C:/Program Files/Mozilla Firefox/firefox.exe'  # put your path
             os.startfile(brow)
 
         elif 'chrome' in query:
             speak('opening chrome')
-            chr = r"C:\Program Files\Google\Chrome\Application\chrome.exe"
+            chr = r"C:\Program Files\Google\Chrome\Application\chrome.exe"  # put your path
             os.startfile(chr)
 
         elif 'folder' in query:
             speak("Opening anandspidy folder")
-            fol = r"E:/"
+            fol = r"E:/"  # put '' ''
             os.startfile(fol)
 
         elif 'what is the weather today' in query:
